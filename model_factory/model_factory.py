@@ -9,6 +9,7 @@ from .simple_cnn_conf import defaults as simple_cnn_defaults
 from .simple_capsnet_conf import defaults as simple_capsnet_defaults
 
 
+
 class ModelFactory:
 
     def factory_call(self, requested_model, mode=None, model_load_path=None, **kwargs):
@@ -31,6 +32,8 @@ class ModelFactory:
 
             model_object = SimpleCNN(**parameters)
             model_object.build_model()
+
+            model_object.apply(model_object.init_weights) #weight initializations.
             loss_func, optim_func, lr_decay_func = model_object.loss_optim_init(model_object, decay_rate=parameters['decay_rate'])
 
             if mode == 'transfer_learning':
@@ -69,6 +72,7 @@ class ModelFactory:
 
             model_object = SimpleCapsNet(**parameters)
             model_object.build_model()
+            model_object.apply(model_object.init_weights) #weight initializations.
             loss_func, optim_func, lr_decay_func = model_object.loss_optim_init(model_object)
 
             if mode == 'transfer_learning':

@@ -4,7 +4,7 @@ Helper functions.
 import os
 import shutil
 from tqdm import tqdm
-
+import cv2
 
 def check_dir_exists(dir_path):
     '''
@@ -31,7 +31,6 @@ def run_cnn_model(generator, model, criterion, optimizer, lr_decayer, device, tr
     Use this func either to run one epoch of training or testing for the cnn model with the given data.
     '''
 
-
     epoch_loss = 0
     epoch_accuracy = 0
     i = 0
@@ -57,12 +56,13 @@ def run_capsnet_model(generator, model, criterion, optimizer, lr_decayer, device
     '''
     Use this func either to run one epoch of training or testing for the cnn model with the given data.
     '''
+
     epoch_loss = 0
     epoch_accuracy = 0
     i = 0
     for i, sample in tqdm(enumerate(generator)):
 
-        batch_x, batch_y = sample['image'].to(DEVICE), sample['label'].to(DEVICE)
+        batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
 
         v_lengths, decoded_images = model(batch_x, batch_y)
 

@@ -30,6 +30,15 @@ class SimpleCNN(nn.Module, ModelMeta):
         self.device = device
 
 
+    def init_weights(self, m):
+        '''
+        Init weights and biases.
+        '''
+        if type(m) == nn.Linear or type(m) == nn.Conv2d:
+            torch.nn.init.xavier_uniform_(m.weight)
+            m.bias.data.fill_(0.01)
+
+
     def build_model(self):
         '''
         Build architecture of the model.

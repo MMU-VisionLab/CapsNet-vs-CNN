@@ -194,6 +194,15 @@ class SimpleCapsNet(nn.Module, ModelMeta):
 
         return one_hot_labels
 
+
+    def init_weights(self, m):
+        '''
+        Init weights and biases.
+        '''
+        if type(m) == nn.Linear or type(m) == nn.Conv2d:
+            torch.nn.init.xavier_uniform_(m.weight)
+            m.bias.data.fill_(0.01)
+
     def build_model(self):
         '''
         Build the architecture of CapsNet.
@@ -211,7 +220,7 @@ class SimpleCapsNet(nn.Module, ModelMeta):
 
         self.primary_caps = PrimaryCapsules(primary_caps_length=self.primary_caps_vlength, epsilon=self.epsilon)
 
-        self.digit_caps = DigitCapsules(num_capsules=64, input_caps_length=self.primary_caps_vlength,
+        self.digit_caps = DigitCapsules(num_capsules=1600, input_caps_length=self.primary_caps_vlength,
                                         digit_caps_length=self.digit_caps_vlength,
                                         num_labels=self.num_classes, routing_iter=self.routing_iteration, epsilon=self.epsilon, device=self.device)
 
@@ -220,7 +229,7 @@ class SimpleCapsNet(nn.Module, ModelMeta):
 
 
 
-    def forward(self, x, y):
+    def forward(self, x, y=None):
         '''
         Forward pass of CapsNet.
         '''
@@ -234,6 +243,9 @@ class SimpleCapsNet(nn.Module, ModelMeta):
         digits = torch.squeeze(digit_caps_layer, dim=1)
 
         v_lengths = torch.sqrt(torch.sum(digits**2, dim=2, keepdim=True) + self.epsilon)
+
+        if y is None:
+            return v_lengths
 
         one_hot_y = self.one_hot_encoder(y, self.device, self.num_classes).detach()
 

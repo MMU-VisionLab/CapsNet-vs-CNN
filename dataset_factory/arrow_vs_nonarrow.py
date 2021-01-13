@@ -83,7 +83,7 @@ class Arrow_vs_NonArrows(DataMeta):
 		if object_index == 0:
 			return self.nonarrow_obj.generate_polygon()
 		elif object_index == 1:
-			return self.nonarrow_obj.generate_polygon()
+			return self.arrow_obj.generate_polygon()
 		else:
 			raise ValueError("The given index for the class of object-level data does not exist! HINT: check the available \
 							classes with 'get_object_level_data' method")

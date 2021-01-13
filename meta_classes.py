@@ -44,6 +44,13 @@ class ModelMeta(metaclass=ABCMeta):
     '''
 
     @abstractmethod
+    def init_weights(self):
+        '''
+        Weights initialization for the network.
+        '''
+        pass
+
+    @abstractmethod
     def build_model(self):
         '''
         Builds the architecture of the model.
