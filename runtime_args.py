@@ -15,6 +15,7 @@ parser.add_argument('--model_save_path', type=str, help='Specify the path to sav
 parser.add_argument('--epoch_feature', type=int, help='Specify the number of epochs for the training/testing for feature-level.', default=5)
 parser.add_argument('--epoch_object', type=int, help='Specify the number of epochs for the training/testing for object-level.', default=10)
 parser.add_argument('--batch_size', type=int, help='Specify the batch size to be used during training/testing.', default=10)
+parser.add_argument('--num_classes', type=int, help='Specify the number of classes the dataset has.', default=2)
 parser.add_argument('--learning_rate', type=float, help='Specify the batch size to be used during training/testing.', default=1e-4)
 parser.add_argument('--num_workers', type=int, help='Specify the number of workers to be used to load the data.', default=4)
 parser.add_argument('--shuffle', type=bool, help='Specify if the data for training/testing should be shuffled or not.', default=True)

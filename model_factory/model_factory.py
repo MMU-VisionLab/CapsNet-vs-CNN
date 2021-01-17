@@ -5,8 +5,10 @@ import sys
 import torch
 from .simple_cnn import SimpleCNN
 from .simple_capsnet import SimpleCapsNet
+from .deep_capsnet import DeepCapsModel
 from .simple_cnn_conf import defaults as simple_cnn_defaults
 from .simple_capsnet_conf import defaults as simple_capsnet_defaults
+from .deep_capsnet_conf import defaults as deep_capsnet_defaults
 
 
 
@@ -93,6 +95,26 @@ class ModelFactory:
                     print(e)
                     print("--- Exiting ---")
                     sys.exit()
+
+            return model_object, loss_func, optim_func, lr_decay_func
+
+
+        ########################################### Deep CAPSNET ###########################################
+
+        elif requested_model == 'deep_capsnet':
+
+            parameters = deep_capsnet_defaults
+
+            for key, value in kwargs.items():
+                try:
+                    parameters[key] = value
+                except KeyError:
+                    raise KeyError("The parameter that you have supplied is not valid for this dataset!")
+
+            model_object = DeepCapsModel(**parameters)
+            model_object.build_model()
+            # model_object.apply(model_object.init_weights) #weight initializations.
+            loss_func, optim_func, lr_decay_func = model_object.loss_optim_init(model_object)
 
             return model_object, loss_func, optim_func, lr_decay_func
 

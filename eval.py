@@ -36,7 +36,7 @@ if not helper.check_dir_exists(args.model_save_path) : helper.create_dir(args.mo
 model = model.to(DEVICE)
 
 
-summary(model, (1, args.img_size, args.img_size))
+# summary(model, (1, args.img_size, args.img_size))
 
 if args.model == 'simple_cnn':
 
@@ -71,8 +71,6 @@ if args.model == 'simple_cnn':
     print("The best accuracy for Simple CNN feature-level eval is %g"%(best_accuracy))
 
 
-
-
 elif args.model == 'simple_capsnet':
 
     print("Feature-level evaluation for simple CapsNet has started!")
@@ -105,6 +103,36 @@ elif args.model == 'simple_capsnet':
     print("The best accuracy for Simple Capsnet feature-level eval is %g"%(best_accuracy))
 
 
+elif args.model == 'deep_capsnet':
+
+    print("Feature-level evaluation for Deep CapsNet has started!")
+
+    best_accuracy = 0
+    for epoch_idx in range(args.epoch_feature):
+
+        model.train()
+
+        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_deepcaps_model(generator=feat_train_generator, model=model, criterion=criterion,
+                                                                                        optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
+                                                                                        device=DEVICE, train=True)
+
+        model.eval()
+
+        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_deepcaps_model(generator=feat_test_generator, model=model, criterion=criterion,
+                                                                                    optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
+                                                                                    device=DEVICE, train=False)
+
+        print('----------- Epoch '+ str(epoch_idx) + '-----------')
+        print(f"Mean Training Loss : {train_epoch_loss/(train_runs + 1)}")
+        print(f"Mean Training Accuracy : {train_epoch_accuracy/(train_runs + 1)}")
+        print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
+        print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
+
+        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_capsnet_feature_model.pth')
+            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            print("Model is saved!")
+
 
 ########################################### OBJECT LEVEL EVALUATION ###########################################
 object_level_train_data = LoadDataset(dataset_folder_path='./generated_dataset', level='object_level', train=True, transform=transforms.ToTensor())
@@ -114,7 +142,7 @@ object_level_test_data = LoadDataset(dataset_folder_path='./generated_dataset', 
 #parameters for the models set in the model configuration files.
 model, criterion, optimizer, lr_decayer = ModelFactory().factory_call(requested_model=args.model, mode='transfer_learning',
                                                                       model_load_path=args.model_save_path,
-                                                                      device=DEVICE, image_size=64)
+                                                                      device=DEVICE, image_size=args.img_size)
 
 
 obj_train_generator = DataLoader(object_level_train_data, batch_size=args.batch_size, shuffle=args.shuffle, num_workers=args.num_workers)
@@ -191,6 +219,33 @@ elif args.model == 'simple_capsnet':
     print("The best accuracy for Simple CapsNet object-level eval is %g"%(best_accuracy))
 
 
+elif args.model == 'deep_capsnet':
 
+    print("Object-level evaluation for Deep CapsNet has started!")
 
+    best_accuracy = 0
+    for epoch_idx in range(args.epoch_feature):
+
+        model.train()
+
+        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_deepcaps_model(generator=obj_train_generator, model=model, criterion=criterion,
+                                                                                        optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
+                                                                                        device=DEVICE, train=True)
+
+        model.eval()
+
+        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_deepcaps_model(generator=obj_test_generator, model=model, criterion=criterion,
+                                                                                    optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
+                                                                                    device=DEVICE, train=False)
+
+        print('----------- Epoch '+ str(epoch_idx) + '-----------')
+        print(f"Mean Training Loss : {train_epoch_loss/(train_runs + 1)}")
+        print(f"Mean Training Accuracy : {train_epoch_accuracy/(train_runs + 1)}")
+        print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
+        print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
+
+        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_capsnet_object_model.pth')
+            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            print("Model is saved!")
 

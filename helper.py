@@ -5,6 +5,7 @@ import os
 import shutil
 from tqdm import tqdm
 import cv2
+import torch
 
 def check_dir_exists(dir_path):
     '''
@@ -25,6 +26,13 @@ def create_dir(dir_path):
     '''
     os.makedirs(dir_path)
     return None
+
+def onehot_encode(tensor, num_classes, device):
+    '''
+    Encodes the given tensor into one-hot vectors.
+    '''
+    return torch.eye(num_classes).to(device).index_select(dim=0, index=tensor.to(device))
+
 
 def run_cnn_model(generator, model, criterion, optimizer, lr_decayer, device, train=True):
     '''
@@ -79,6 +87,30 @@ def run_capsnet_model(generator, model, criterion, optimizer, lr_decayer, device
     return epoch_loss, epoch_accuracy, i
 
 
+def run_deepcaps_model(generator, model, criterion, optimizer, lr_decayer, num_classes, device, train=True):
+    '''
+    Use this func either to run one epoch of training or testing for the deep capsnet model with the given data.
+    '''
 
+    epoch_loss = 0
+    epoch_accuracy = 0
+    i = 0
+    for i, sample in tqdm(enumerate(generator)):
 
+        batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
+
+        onehot_label = onehot_encode(batch_y, num_classes=num_classes, device=device)
+
+        outputs, _, reconstructed, indices = model(batch_x, onehot_label)
+
+        if train:
+            loss = model.optimize_model(predicted=outputs, target=onehot_label, ori_imgs=batch_x, decoded=reconstructed,
+                                        loss_func=criterion, optim_func=optimizer, decay_func=lr_decayer, lr_decay_step=False)
+        else:
+            loss = model.calculate_loss(predicted=outputs, target=onehot_label, ori_imgs=batch_x, decoded=reconstructed, loss_func=criterion)
+
+        epoch_loss += loss
+        epoch_accuracy += model.calculate_accuracy(predictions=indices, labels=batch_y)
+
+    return epoch_loss, epoch_accuracy, i
 
