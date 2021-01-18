@@ -36,7 +36,7 @@ if not helper.check_dir_exists(args.model_save_path) : helper.create_dir(args.mo
 model = model.to(DEVICE)
 
 
-# summary(model, (1, args.img_size, args.img_size))
+summary(model, (1, args.img_size, args.img_size))
 
 if args.model == 'simple_cnn':
 
@@ -179,7 +179,7 @@ if args.model == 'simple_cnn':
 
         #save the model when it has the best accuracy.
         if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
-            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/cnn_object_model.pth')
+            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/simple_cnn_object_model.pth')
             best_accuracy = test_epoch_accuracy/(test_runs + 1)
             print("Model is saved!")
 
@@ -212,7 +212,7 @@ elif args.model == 'simple_capsnet':
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
         if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
-            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/capsnet_object_model.pth')
+            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/simple_capsnet_object_model.pth')
             best_accuracy = test_epoch_accuracy/(test_runs + 1)
             print("Model is saved!")
 
@@ -224,7 +224,7 @@ elif args.model == 'deep_capsnet':
     print("Object-level evaluation for Deep CapsNet has started!")
 
     best_accuracy = 0
-    for epoch_idx in range(args.epoch_feature):
+    for epoch_idx in range(args.epoch_object):
 
         model.train()
 

@@ -116,6 +116,26 @@ class ModelFactory:
             # model_object.apply(model_object.init_weights) #weight initializations.
             loss_func, optim_func, lr_decay_func = model_object.loss_optim_init(model_object)
 
+            if mode == 'transfer_learning':
+
+                assert not model_load_path is None, "The trained model path must be provided for transfer-learning mode!"
+                model_load_path = model_load_path.rstrip('/') + '/deep_capsnet_feature_model.pth'
+                try:
+                    model_object.load_state_dict(torch.load(model_load_path))
+                    print("Model has loaded!")
+
+                    #disables the gradient flow in the convolutional layers.
+                    for x in model_object.conv_blocks:
+                        for y in x.parameters():
+                            y.requires_grad = False
+                    print("The gradient flow in the convolutional layers has been disabled!")
+
+                except Exception as e:
+                    print("Error loading the trained model!")
+                    print(e)
+                    print("--- Exiting ---")
+                    sys.exit()
+
             return model_object, loss_func, optim_func, lr_decay_func
 
         else:
