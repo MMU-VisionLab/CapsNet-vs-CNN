@@ -35,7 +35,6 @@ if not helper.check_dir_exists(args.model_save_path) : helper.create_dir(args.mo
 
 model = model.to(DEVICE)
 
-
 summary(model, (1, args.img_size, args.img_size))
 
 if args.model == 'simple_cnn':
@@ -112,13 +111,15 @@ elif args.model == 'deep_capsnet':
 
         model.train()
 
-        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_deepcaps_model(generator=feat_train_generator, model=model, criterion=criterion,
+        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_deepcaps_model(epoch_idx=epoch_idx,
+                                                                                        generator=feat_train_generator, model=model, criterion=criterion,
                                                                                         optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
                                                                                         device=DEVICE, train=True)
 
         model.eval()
 
-        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_deepcaps_model(generator=feat_test_generator, model=model, criterion=criterion,
+        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_deepcaps_model(epoch_idx=epoch_idx,
+                                                                                    generator=feat_test_generator, model=model, criterion=criterion,
                                                                                     optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
                                                                                     device=DEVICE, train=False)
 
@@ -132,6 +133,41 @@ elif args.model == 'deep_capsnet':
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_capsnet_feature_model.pth')
             best_accuracy = test_epoch_accuracy/(test_runs + 1)
             print("Model is saved!")
+
+    print("The best accuracy for Deep CapsNet feature-level eval is %g"%(best_accuracy))
+
+
+elif args.model == 'deep_cnn':
+
+    print("Feature-level evaluation has for Deep CNN has started!")
+
+    best_accuracy = 0
+    for epoch_idx in range(args.epoch_feature):
+
+        model.train()
+
+        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_cnn_model(generator=feat_train_generator, model=model, criterion=criterion,
+                                                                  optimizer=optimizer, lr_decayer=lr_decayer, device=DEVICE, train=True)
+
+
+        model.eval()
+        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_cnn_model(generator=feat_test_generator, model=model, criterion=criterion,
+                                                                  optimizer=optimizer, lr_decayer=lr_decayer, device=DEVICE, train=False)
+
+
+        print('----------- Epoch '+ str(epoch_idx) + '-----------')
+        print(f"Mean Training Loss : {train_epoch_loss/(train_runs + 1)}")
+        print(f"Mean Training Accuracy : {train_epoch_accuracy/(train_runs + 1)}")
+        print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
+        print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
+
+        #save the model when it has the best accuracy.
+        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_cnn_feature_model.pth')
+            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            print("Model is saved!")
+
+    print("The best accuracy for Deep CNN feature-level eval is %g"%(best_accuracy))
 
 
 ########################################### OBJECT LEVEL EVALUATION ###########################################
@@ -228,13 +264,15 @@ elif args.model == 'deep_capsnet':
 
         model.train()
 
-        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_deepcaps_model(generator=obj_train_generator, model=model, criterion=criterion,
+        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_deepcaps_model(epoch_idx=epoch_idx, generator=obj_train_generator, model=model,
+                                                                                        criterion=criterion,
                                                                                         optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
                                                                                         device=DEVICE, train=True)
 
         model.eval()
 
-        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_deepcaps_model(generator=obj_test_generator, model=model, criterion=criterion,
+        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_deepcaps_model(epoch_idx=epoch_idx, generator=obj_test_generator, model=model,
+                                                                                    criterion=criterion,
                                                                                     optimizer=optimizer, lr_decayer=lr_decayer, num_classes=args.num_classes,
                                                                                     device=DEVICE, train=False)
 
@@ -249,3 +287,38 @@ elif args.model == 'deep_capsnet':
             best_accuracy = test_epoch_accuracy/(test_runs + 1)
             print("Model is saved!")
 
+    print("The best accuracy for Deep CapsNet object-level eval is %g"%(best_accuracy))
+
+
+
+elif args.model == 'deep_cnn':
+
+    print("Object-level evaluation has for Deep CNN has started!")
+
+    best_accuracy = 0
+    for epoch_idx in range(args.epoch_feature):
+
+        model.train()
+
+        train_epoch_loss, train_epoch_accuracy, train_runs = helper.run_cnn_model(generator=obj_train_generator, model=model, criterion=criterion,
+                                                                  optimizer=optimizer, lr_decayer=lr_decayer, device=DEVICE, train=True)
+
+
+        model.eval()
+        test_epoch_loss, test_epoch_accuracy, test_runs = helper.run_cnn_model(generator=obj_test_generator, model=model, criterion=criterion,
+                                                                  optimizer=optimizer, lr_decayer=lr_decayer, device=DEVICE, train=False)
+
+
+        print('----------- Epoch '+ str(epoch_idx) + '-----------')
+        print(f"Mean Training Loss : {train_epoch_loss/(train_runs + 1)}")
+        print(f"Mean Training Accuracy : {train_epoch_accuracy/(train_runs + 1)}")
+        print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
+        print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
+
+        #save the model when it has the best accuracy.
+        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+            torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_cnn_object_model.pth')
+            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            print("Model is saved!")
+
+    print("The best accuracy for Deep CNN object-level eval is %g"%(best_accuracy))

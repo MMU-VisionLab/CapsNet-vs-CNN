@@ -9,6 +9,8 @@ from .deep_capsnet import DeepCapsModel
 from .simple_cnn_conf import defaults as simple_cnn_defaults
 from .simple_capsnet_conf import defaults as simple_capsnet_defaults
 from .deep_capsnet_conf import defaults as deep_capsnet_defaults
+from .deep_cnn import DeepCNN
+from .deep_cnn_conf import defaults as deep_cnn_defaults
 
 
 
@@ -137,6 +139,46 @@ class ModelFactory:
                     sys.exit()
 
             return model_object, loss_func, optim_func, lr_decay_func
+
+
+        ########################################### Deep CNN ###########################################
+
+        elif requested_model == 'deep_cnn':
+
+            parameters = deep_cnn_defaults
+
+            for key, value in kwargs.items():
+                try:
+                    parameters[key] = value
+                except KeyError:
+                    raise KeyError("The parameter that you have supplied is not valid for this dataset!")
+
+            model_object = DeepCNN(**parameters)
+            model_object.build_model()
+            model_object.apply(model_object.init_weights) #weight initializations.
+            loss_func, optim_func, lr_decay_func = model_object.loss_optim_init(model_object, decay_rate=parameters['decay_rate'])
+
+            if mode == 'transfer_learning':
+
+                assert not model_load_path is None, "The trained model path must be provided for transfer-learning mode!"
+                model_load_path = model_load_path.rstrip('/') + '/deep_cnn_feature_model.pth'
+                try:
+                    model_object.load_state_dict(torch.load(model_load_path))
+                    print("Model has loaded!")
+
+                     #disables the gradient flow in the convolutional layers.
+                    for x in model_object.deep_cnn.parameters():
+                        x.requires_grad = False
+                    print("The gradient flow in the convolutional layers has been disabled!")
+
+                except Exception as e:
+                    print("Error loading the trained model!")
+                    print(e)
+                    print("--- Exiting ---")
+                    sys.exit()
+
+            return model_object, loss_func, optim_func, lr_decay_func
+
 
         else:
             raise ValueError("The requested model does not exist! Try checking your spelling.")

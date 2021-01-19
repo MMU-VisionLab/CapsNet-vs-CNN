@@ -4,8 +4,8 @@ Helper functions.
 import os
 import shutil
 from tqdm import tqdm
-import cv2
 import torch
+from plot import plot_reconstruction
 
 def check_dir_exists(dir_path):
     '''
@@ -87,7 +87,7 @@ def run_capsnet_model(generator, model, criterion, optimizer, lr_decayer, device
     return epoch_loss, epoch_accuracy, i
 
 
-def run_deepcaps_model(generator, model, criterion, optimizer, lr_decayer, num_classes, device, train=True):
+def run_deepcaps_model(epoch_idx, generator, model, criterion, optimizer, lr_decayer, num_classes, device, train=True):
     '''
     Use this func either to run one epoch of training or testing for the deep capsnet model with the given data.
     '''
@@ -95,6 +95,7 @@ def run_deepcaps_model(generator, model, criterion, optimizer, lr_decayer, num_c
     epoch_loss = 0
     epoch_accuracy = 0
     i = 0
+    batch_x, batch_y, reconstructed, indices = None, None, None, None
     for i, sample in tqdm(enumerate(generator)):
 
         batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
@@ -111,6 +112,9 @@ def run_deepcaps_model(generator, model, criterion, optimizer, lr_decayer, num_c
 
         epoch_loss += loss
         epoch_accuracy += model.calculate_accuracy(predictions=indices, labels=batch_y)
+
+    plot_reconstruction(path='./graphs_folder/', num_epoch=epoch_idx, original_images=batch_x.detach(), reconstructed_images=reconstructed.detach(),
+                        predicted_classes=indices.detach(), true_classes=batch_y.detach())
 
     return epoch_loss, epoch_accuracy, i
 

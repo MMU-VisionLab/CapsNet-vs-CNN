@@ -419,7 +419,7 @@ class DeepCapsModel(ModelMeta, nn.Module):
         self.decoder = Decoder(caps_dimension=16, num_caps=1, device=self.device, img_size=self.width, img_channels=1)
         self.mse_loss = nn.MSELoss(reduction='none')
 
-        self.conv_blocks = [self.conv1, self.conv2dcaps_00, self.conv2dcaps_01, self.conv2dcaps_02, self.conv2dcaps_03, self.conv2dcaps_10,
+        self.conv_blocks = [self.conv1, self.bn1, self.conv2dcaps_00, self.conv2dcaps_01, self.conv2dcaps_02, self.conv2dcaps_03, self.conv2dcaps_10,
                             self.conv2dcaps_11, self.conv2dcaps_12, self.conv2dcaps_13, self.conv2dcaps_20, self.conv2dcaps_21, self.conv2dcaps_22,
                             self.conv2dcaps_23, self.conv2dcaps_30, self.conv3dcaps_31, self.conv2dcaps_32, self.conv2dcaps_33]
 
