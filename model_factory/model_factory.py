@@ -155,7 +155,7 @@ class ModelFactory:
 
             model_object = DeepCNN(**parameters)
             model_object.build_model()
-            model_object.apply(model_object.init_weights) #weight initializations.
+            # model_object.apply(model_object.init_weights) #weight initializations.
             loss_func, optim_func, lr_decay_func = model_object.loss_optim_init(model_object, decay_rate=parameters['decay_rate'])
 
             if mode == 'transfer_learning':
