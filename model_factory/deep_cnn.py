@@ -86,7 +86,7 @@ class DeepCNN(nn.Module, ModelMeta):
         Initialize the loss function and the optimizer for the given object model.
         '''
         loss_func = nn.CrossEntropyLoss()
-        optim_func = torch.optim.Adam(model_obj.parameters())
+        optim_func = torch.optim.Adam(model_obj.parameters(), lr=self.learning_rate)
         lr_decay = torch.optim.lr_scheduler.ExponentialLR(optim_func, gamma=decay_rate)
 
         return loss_func, optim_func, lr_decay
