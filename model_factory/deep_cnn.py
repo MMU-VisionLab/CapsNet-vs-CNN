@@ -50,32 +50,32 @@ class DeepCNN(nn.Module, ModelMeta):
                             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
                             nn.ReLU(inplace=True),
                             nn.MaxPool2d(kernel_size=2, stride=2),
+                            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
+                            nn.ReLU(inplace=True),
+                            nn.MaxPool2d(kernel_size=2, stride=2),
                             nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1),
                             nn.ReLU(inplace=True),
-                            nn.MaxPool2d(kernel_size=2, stride=2),
-                            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
-                            nn.ReLU(inplace=True),
                             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
                             nn.ReLU(inplace=True),
                             nn.MaxPool2d(kernel_size=2, stride=2),
                             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
                             nn.ReLU(inplace=True),
-                            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
-                            nn.ReLU(inplace=True),
-                            nn.MaxPool2d(kernel_size=2, stride=2),
                             nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, stride=1, padding=1),
                             nn.ReLU(inplace=True),
+                            nn.MaxPool2d(kernel_size=2, stride=2),
                             nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1),
+                            nn.ReLU(inplace=True),
+                            nn.Conv2d(in_channels=512, out_channels=320, kernel_size=3, stride=1, padding=1),
                             nn.ReLU(inplace=True),
                             nn.MaxPool2d(kernel_size=2, stride=2)
                             )
 
-        self.feature_vector_size = (self.image_size//(2**5))**2 * 512
+        self.feature_vector_size = (self.image_size//(2**5))**2 * 320
 
-        self.fully_connected = nn.Sequential(nn.Linear(self.feature_vector_size, 256),
+        self.fully_connected = nn.Sequential(nn.Linear(self.feature_vector_size, 128),
                                              nn.ReLU(inplace=True),
                                              nn.Dropout(p=self.drop_prob),
-                                             nn.Linear(256, self.num_classes))
+                                             nn.Linear(128, self.num_classes))
 
 
 

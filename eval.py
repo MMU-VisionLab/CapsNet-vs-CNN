@@ -41,7 +41,7 @@ if args.model == 'simple_cnn':
 
     print("Feature-level evaluation has for simple CNN has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_feature):
 
         model.train()
@@ -62,19 +62,19 @@ if args.model == 'simple_cnn':
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
         #save the model when it has the best accuracy.
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/simple_cnn_feature_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Simple CNN feature-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Simple CNN feature-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 elif args.model == 'simple_capsnet':
 
     print("Feature-level evaluation for simple CapsNet has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_feature):
 
         model.train()
@@ -94,19 +94,19 @@ elif args.model == 'simple_capsnet':
         print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/simple_capsnet_feature_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Simple Capsnet feature-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Simple CapsNet feature-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 elif args.model == 'deep_capsnet':
 
     print("Feature-level evaluation for Deep CapsNet has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_feature):
 
         model.train()
@@ -129,19 +129,19 @@ elif args.model == 'deep_capsnet':
         print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_capsnet_feature_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Deep CapsNet feature-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Deep CapsNet feature-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 elif args.model == 'deep_cnn':
 
     print("Feature-level evaluation has for Deep CNN has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_feature):
 
         model.train()
@@ -162,12 +162,12 @@ elif args.model == 'deep_cnn':
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
         #save the model when it has the best accuracy.
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_cnn_feature_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Deep CNN feature-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Deep CNN feature-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 ########################################### OBJECT LEVEL EVALUATION ###########################################
@@ -192,7 +192,7 @@ if args.model == 'simple_cnn':
 
     print("Object-level evaluation has for simple CNN has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_object):
 
         model.train()
@@ -214,20 +214,20 @@ if args.model == 'simple_cnn':
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
         #save the model when it has the best accuracy.
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/simple_cnn_object_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
 
-    print("The best accuracy for Simple CNN object-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Simple CNN object-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 elif args.model == 'simple_capsnet':
 
     print("Object-level evaluation for simple CapsNet has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_object):
 
         model.train()
@@ -247,19 +247,19 @@ elif args.model == 'simple_capsnet':
         print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/simple_capsnet_object_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Simple CapsNet object-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Simple CapsNet object-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 elif args.model == 'deep_capsnet':
 
     print("Object-level evaluation for Deep CapsNet has started!")
 
-    best_accuracy = 0
+    best_accuracy = [0,0]
     for epoch_idx in range(args.epoch_object):
 
         model.train()
@@ -282,12 +282,12 @@ elif args.model == 'deep_capsnet':
         print(f"Mean Testing Loss : {test_epoch_loss/(test_runs + 1)}")
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_capsnet_object_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Deep CapsNet object-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Deep CapsNet object-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))
 
 
 
@@ -295,8 +295,8 @@ elif args.model == 'deep_cnn':
 
     print("Object-level evaluation has for Deep CNN has started!")
 
-    best_accuracy = 0
-    for epoch_idx in range(args.epoch_feature):
+    best_accuracy = [0,0]
+    for epoch_idx in range(args.epoch_object):
 
         model.train()
 
@@ -316,9 +316,9 @@ elif args.model == 'deep_cnn':
         print(f"Mean Testing Accuracy : {test_epoch_accuracy/(test_runs + 1)}")
 
         #save the model when it has the best accuracy.
-        if best_accuracy <= test_epoch_accuracy/(test_runs + 1):
+        if best_accuracy[1] <= test_epoch_accuracy/(test_runs + 1):
             torch.save(model.state_dict(), args.model_save_path.rstrip('/')+'/deep_cnn_object_model.pth')
-            best_accuracy = test_epoch_accuracy/(test_runs + 1)
+            best_accuracy = [train_epoch_accuracy/(train_runs + 1), test_epoch_accuracy/(test_runs + 1)]
             print("Model is saved!")
 
-    print("The best accuracy for Deep CNN object-level eval is %g"%(best_accuracy))
+    print("The best train and test accuracy for Deep CNN object-level eval is %g and %g"%(best_accuracy[0], best_accuracy[1]))

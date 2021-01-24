@@ -8,7 +8,7 @@ import numpy as np
 from skimage.util import random_noise
 
 
-folder_path = './generated_dataset/'
+folder_path = './generated_dataset_noise/'
 
 
 for x in glob.glob(folder_path + '**', recursive=True):
