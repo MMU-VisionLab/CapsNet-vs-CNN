@@ -42,19 +42,21 @@ def run_cnn_model(generator, model, criterion, optimizer, lr_decayer, device, tr
     epoch_loss = 0
     epoch_accuracy = 0
     i = 0
-    for i, sample in tqdm(enumerate(generator)):
 
-        batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
+    with torch.set_grad_enabled(train):
+        for i, sample in tqdm(enumerate(generator)):
 
-        net_output = model(batch_x)
+            batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
 
-        if train:
-            loss = model.optimize_model(predicted=net_output, target=batch_y, loss_func=criterion, optim_func=optimizer, decay_func=lr_decayer)
-        else:
-            loss = model.calculate_loss(predicted=net_output, target=batch_y, loss_func=criterion)
+            net_output = model(batch_x)
 
-        epoch_loss += loss
-        epoch_accuracy += model.calculate_accuracy(net_output, batch_y)
+            if train:
+                loss = model.optimize_model(predicted=net_output, target=batch_y, loss_func=criterion, optim_func=optimizer, decay_func=lr_decayer)
+            else:
+                loss = model.calculate_loss(predicted=net_output, target=batch_y, loss_func=criterion)
+
+            epoch_loss += loss
+            epoch_accuracy += model.calculate_accuracy(net_output, batch_y)
 
 
     return epoch_loss, epoch_accuracy, i
@@ -68,21 +70,23 @@ def run_capsnet_model(generator, model, criterion, optimizer, lr_decayer, device
     epoch_loss = 0
     epoch_accuracy = 0
     i = 0
-    for i, sample in tqdm(enumerate(generator)):
 
-        batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
+    with torch.set_grad_enabled(train):
+        for i, sample in tqdm(enumerate(generator)):
 
-        v_lengths, decoded_images = model(batch_x, batch_y)
+            batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
 
-        if train:
-            loss = model.optimize_model(predicted=v_lengths, target=batch_y, ori_imgs=batch_x, decoded=decoded_images, loss_func=criterion,
-                                            optim_func=optimizer, decay_func=lr_decayer, lr_decay_step=False)
-        else:
-            loss = model.calculate_loss(predicted=v_lengths, target=batch_y, ori_imgs=batch_x, decoded=decoded_images,
-                                              loss_func=criterion)
+            v_lengths, decoded_images = model(batch_x, batch_y)
 
-        epoch_loss += loss
-        epoch_accuracy += model.calculate_accuracy(v_lengths, batch_y)
+            if train:
+                loss = model.optimize_model(predicted=v_lengths, target=batch_y, ori_imgs=batch_x, decoded=decoded_images, loss_func=criterion,
+                                                optim_func=optimizer, decay_func=lr_decayer, lr_decay_step=False)
+            else:
+                loss = model.calculate_loss(predicted=v_lengths, target=batch_y, ori_imgs=batch_x, decoded=decoded_images,
+                                                loss_func=criterion)
+
+            epoch_loss += loss
+            epoch_accuracy += model.calculate_accuracy(v_lengths, batch_y)
 
     return epoch_loss, epoch_accuracy, i
 
@@ -96,25 +100,27 @@ def run_deepcaps_model(epoch_idx, generator, model, criterion, optimizer, lr_dec
     epoch_accuracy = 0
     i = 0
     batch_x, batch_y, reconstructed, indices = None, None, None, None
-    for i, sample in tqdm(enumerate(generator)):
 
-        batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
+    with torch.set_grad_enabled(train):
+        for i, sample in tqdm(enumerate(generator)):
 
-        onehot_label = onehot_encode(batch_y, num_classes=num_classes, device=device)
+            batch_x, batch_y = sample['image'].to(device), sample['label'].to(device)
 
-        outputs, _, reconstructed, indices = model(batch_x, onehot_label)
+            onehot_label = onehot_encode(batch_y, num_classes=num_classes, device=device)
 
-        if train:
-            loss = model.optimize_model(predicted=outputs, target=onehot_label, ori_imgs=batch_x, decoded=reconstructed,
-                                        loss_func=criterion, optim_func=optimizer, decay_func=lr_decayer, lr_decay_step=False)
-        else:
-            loss = model.calculate_loss(predicted=outputs, target=onehot_label, ori_imgs=batch_x, decoded=reconstructed, loss_func=criterion)
+            outputs, _, reconstructed, indices = model(batch_x, onehot_label)
 
-        epoch_loss += loss
-        epoch_accuracy += model.calculate_accuracy(predictions=indices, labels=batch_y)
+            if train:
+                loss = model.optimize_model(predicted=outputs, target=onehot_label, ori_imgs=batch_x, decoded=reconstructed,
+                                            loss_func=criterion, optim_func=optimizer, decay_func=lr_decayer, lr_decay_step=False)
+            else:
+                loss = model.calculate_loss(predicted=outputs, target=onehot_label, ori_imgs=batch_x, decoded=reconstructed, loss_func=criterion)
 
-    plot_reconstruction(path='./graphs_folder/', num_epoch=epoch_idx, original_images=batch_x.detach(), reconstructed_images=reconstructed.detach(),
-                        predicted_classes=indices.detach(), true_classes=batch_y.detach())
+            epoch_loss += loss
+            epoch_accuracy += model.calculate_accuracy(predictions=indices, labels=batch_y)
+
+        plot_reconstruction(path='./graphs_folder/', num_epoch=epoch_idx, original_images=batch_x.detach(), reconstructed_images=reconstructed.detach(),
+                            predicted_classes=indices.detach(), true_classes=batch_y.detach())
 
     return epoch_loss, epoch_accuracy, i
 

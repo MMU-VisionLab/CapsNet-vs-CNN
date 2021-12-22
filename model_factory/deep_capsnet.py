@@ -526,7 +526,7 @@ class DeepCapsModel(ModelMeta, nn.Module):
         '''
         batch_size = reconstructed.size()[0]
         loss = self.mse_loss(reconstructed.view(batch_size, -1), data.view(batch_size, -1))
-        return 0.4 * loss.sum(dim=1)
+        return 0.05 * loss.sum(dim=1)
 
 
     def loss(self, x, reconstructed, data, labels, lambda_=0.5, m_plus=0.9, m_minus=0.1):

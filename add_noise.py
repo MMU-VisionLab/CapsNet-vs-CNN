@@ -8,12 +8,12 @@ import numpy as np
 from skimage.util import random_noise
 
 
-folder_path = './generated_dataset_noise/'
+folder_path = './generated_dataset_noise_all/'
 
 
 for x in glob.glob(folder_path + '**', recursive=True):
 
-    if "train" in x and x.endswith('jpg'):
+    if "test" in x and x.endswith('jpg'):
 
         img = cv2.imread(x)
         noise_img = random_noise(img, mode='gaussian')
